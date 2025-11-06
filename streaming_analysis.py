@@ -1,1 +1,95 @@
-# Create your code here
+# streaming_analysis.py
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# --------------------------------------------
+# Step 1: Create a dataset
+# --------------------------------------------
+data = {
+    'artist': ['Taylor Swift', 'Drake', 'The Weeknd', 'Taylor Swift', 'SZA', 'Drake', 'Kendrick Lamar', 'The Weeknd', 'SZA', 'Kendrick Lamar'],
+    'song': ['Love Story', 'Hotline Bling', 'Blinding Lights', 'Anti-Hero', 'Kill Bill', 'God’s Plan', 'HUMBLE.', 'Starboy', 'Snooze', 'DNA.'],
+    'genre': ['Pop', 'Hip-Hop', 'R&B', 'Pop', 'R&B', 'Hip-Hop', 'Hip-Hop', 'R&B', 'R&B', 'Hip-Hop'],
+    'duration_seconds': [230, 210, 200, 245, 180, 195, 185, 220, 175, 190],
+    'completion_rate': [0.98, 0.92, 0.96, 0.99, 0.95, 0.90, 0.93, 0.97, 0.94, 0.91],
+    'day_of_week': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday'],
+    'month': ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October']
+}
+
+df = pd.DataFrame(data)
+
+# --------------------------------------------
+# Step 2: Custom order for days and months
+# --------------------------------------------
+month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+day_order = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+df['month'] = pd.Categorical(df['month'], categories=month_order, ordered=True)
+df['day_of_week'] = pd.Categorical(df['day_of_week'], categories=day_order, ordered=True)
+
+# --------------------------------------------
+# Step 3: Descriptive Statistical Analysis
+# --------------------------------------------
+completion_rate = df['completion_rate'].mean()
+total_time = df['duration_seconds'].sum()
+top_artists = df['artist'].value_counts().head(5)
+top_songs = df['song'].value_counts().head(10)
+top_genres = df['genre'].value_counts().head(5)
+days = df['day_of_week'].value_counts().sort_index()
+months = df['month'].value_counts().sort_index()
+
+# --------------------------------------------
+# Step 4: Print Results
+# --------------------------------------------
+print("Your Year in Music Summary:")
+print(f"Average Completion Rate: {completion_rate:.2f}")
+print(f"Total Listening Time (seconds): {total_time} sec ({total_time/60:.2f} min, {total_time/3600:.2f} hrs)\n")
+
+print("Top Artists:")
+print(top_artists, "\n")
+
+print("Top Songs:")
+print(top_songs, "\n")
+
+print("Top Genres:")
+print(top_genres, "\n")
+
+print("Songs by Day:")
+print(days, "\n")
+
+print("Songs by Month:")
+print(months)
+
+# --------------------------------------------
+# Step 5: Create Visualizations
+# --------------------------------------------
+
+# Histogram of duration_seconds
+plt.figure(figsize=(6,4))
+plt.hist(df['duration_seconds'], bins=5, edgecolor='black')
+plt.title("Distribution of Song Durations")
+plt.xlabel("Duration (seconds)")
+plt.ylabel("Frequency")
+plt.savefig("histogram_duration.png")  # Save the histogram
+plt.close()
+
+# Bar chart - songs by day
+plt.figure(figsize=(6,4))
+days.plot(kind='bar', color='skyblue', edgecolor='black')
+plt.title("Songs Listened by Day of the Week")
+plt.xlabel("Day of the Week")
+plt.ylabel("Number of Songs")
+plt.tight_layout()
+plt.savefig("bar_chart_days.png")
+plt.close()
+
+# Line chart - songs by month
+plt.figure(figsize=(6,4))
+months.plot(kind='line', marker='o')
+plt.title("Songs Listened by Month")
+plt.xlabel("Month")
+plt.ylabel("Number of Songs")
+plt.tight_layout()
+plt.savefig("line_chart_months.png")
+plt.close()
+
+print("\n✅ Charts saved as 'histogram_duration.png', 'bar_chart_days.png', and 'line_chart_months.png'")
